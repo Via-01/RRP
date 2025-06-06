@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .profile-container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-header img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        .profile-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .profile-section {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .profile-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+
+        .profile-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .profile-section ul li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .profile-section canvas {
+            width: 100%;
+            height: 200px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .skills li {
+            background-color: white;
+            color: #4CAF50;
+            padding: 10px;
+            margin: 5px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .notifications ul {
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .notifications ul li {
+            background-color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .profile-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="profile-picture.jpg" alt="Profile Picture">
+            <div>
+                <h2>John Doe</h2>
+                <p>Email: john.doe@example.com</p>
+                <p>Phone: (123) 456-7890</p>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h3>Academic Information</h3>
+            <ul>
+                <li>Major: Computer Science</li>
+                <li>GPA: 3.8</li>
+                <li>Academic Advisor: Dr. Smith</li>
+                <li>Graduation Date: May 2025</li>
+            </ul>
+        </div>
+
+        <div class="profile-section">
+            <h3>Attendance Record</h3>
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+        <div class="profile-section notifications">
+            <h3>Notifications</h3>
+            <ul id="notificationsList">
+                <!-- Notifications will be dynamically added here -->
+            </ul>
+        </div>
+
+        <div class="profile-section">
+            <h3>Assignments Due</h3>
+            <ul id="assignmentsList">
+                <!-- Assignments will be dynamically added here -->
+            </ul>
+        </div>
+
+        <div class="profile-section">
+            <h3>Exam Schedule</h3>
+            <ul id="examsList">
+                <!-- Exams will be dynamically added here -->
+            </ul>
+        </div>
+
+        <div class="profile-section">
+            <h3>Achievements and Awards</h3>
+            <ul>
+                <li>Dean's List - Fall 2023</li>
+                <li>Best Project Award - Science Fair 2022</li>
+                <li>Certified Java Programmer</li>
+            </ul>
+        </div>
+
+        <div class="profile-section">
+            <h3>Skills and Interests</h3>
+            <ul class="skills">
+                <li>Java</li>
+                <li>Python</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>Communication</li>
+                <li>Teamwork</li>
+                <li>Problem-solving</li>
+                <li>Reading</li>
+                <li>Coding</li>
+                <li>Hiking</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Sample data for attendance chart
+            const attendanceData = {
+                labels: ['Math', 'Science', 'History'],
+                datasets: [{
+                    label: 'Attendance (%)',
+                    data: [90, 85, 95],
+                    backgroundColor: '#4CAF50'
+                }]
+            };
+
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: attendanceData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+
+            // Update notifications, assignments, and exams from localStorage
+            function updateProfileSections() {
+                const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+                const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+                const exams = JSON.parse(localStorage.getItem('exams')) || [];
+
+                const notificationsList = document.getElementById('notificationsList');
+                const assignmentsList = document.getElementById('assignmentsList');
+                const examsList = document.getElementById('examsList');
+
+                notificationsList.innerHTML = '';
+                assignmentsList.innerHTML = '';
+                examsList.innerHTML = '';
+
+                notifications.forEach(notification => {
+                    const li = document.createElement('li');
+                    li.textContent = notification;
+                    notificationsList.appendChild(li);
+                });
+
+                assignments.forEach(assignment => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = 'assignments.html';
+                    a.textContent = `${assignment.subject} - Due: ${new Date(assignment.dueDate).toLocaleDateString()}`;
+                    li.appendChild(a);
+                    assignmentsList.appendChild(li);
+                });
+
+                exams.forEach(exam => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = 'exams.html';
+                    a.textContent = `${exam.subject} Exam - ${new Date(exam.datetime).toLocaleDateString()}`;
+                    li.appendChild(a);
+                    examsList.appendChild(li);
+                });
+            }
+
+            // Call the function to update profile sections on page load
+            updateProfileSections();
+
+            // Highlight the active tab in the sidebar
+            const path = window.location.pathname;
+            const page = path.split("/").pop().split(".")[0];
+            document.getElementById(page).classList.add('active');
+        });
+    </script>
+</body>
+</html>

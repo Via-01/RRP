@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .dashboard-section {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .notifications,
+        .assignments-gist {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .notifications h3,
+        .assignments-gist h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .list-unstyled {
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .list-unstyled li {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .list-unstyled li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .list-unstyled a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .list-unstyled a:hover {
+            color: #4CAF50;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header" onclick="location.href='index.html'">
+                <h2>Dashboard</h2>
+            </div>
+            <div class="sidebar-menu">
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+                <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+                <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+                <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+                <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="dashboard-section">
+                <h3>Attendance Tracker</h3>
+                <div class="canvas-container">
+                    <canvas id="attendancePieChart"></canvas>
+                </div>
+            </div>
+
+            <div class="notifications">
+                <h3>Notifications</h3>
+                <ul class="list-unstyled" id="notificationsList">
+                    <!-- Notifications will be dynamically added here -->
+                </ul>
+            </div>
+
+            <div class="assignments-gist">
+                <h3>Assignments Due</h3>
+                <ul class="list-unstyled" id="assignmentsList">
+                    <!-- Assignment notifications will be dynamically added here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function getSubjectData() {
+            const storedData = localStorage.getItem('subjectData');
+            return storedData ? JSON.parse(storedData) : [];
+        }
+
+        function generatePieChart() {
+            const subjectData = getSubjectData();
+
+            let totalClassesAttended = subjectData.reduce((acc, val) => acc + val.attended, 0);
+            let totalClassesTotal = subjectData.reduce((acc, val) => acc + val.total, 0);
+            let totalAttendance = totalClassesTotal > 0 ? (totalClassesAttended / totalClassesTotal) * 100 : 0;
+
+            const pieData = {
+                labels: ['Total Attendance', 'Remaining'],
+                datasets: [{
+                    data: [totalAttendance, 100 - totalAttendance],
+                    backgroundColor: ['#4CAF50', '#f0f0f0']
+                }]
+            };
+
+            return pieData;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctxPie = document.getElementById('attendancePieChart').getContext('2d');
+            const pieData = generatePieChart();
+
+            new Chart(ctxPie, {
+                type: 'pie',
+                data: pieData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.raw) {
+                                        label += context.raw.toFixed(2) + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                fontColor: 'black'
+                            }
+                        }
+                    }
+                }
+            });
+
+            updateDashboardExams(); // Update exams notifications
+            updateDashboardAssignments(); // Update assignments notifications
+        });
+
+        function updateDashboardExams() {
+            const exams = JSON.parse(localStorage.getItem('exams')) || [];
+            const notificationsList = document.getElementById('notificationsList');
+            notificationsList.innerHTML = ''; // Clear existing notifications
+
+            exams.forEach(exam => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = 'exams.html';
+                a.textContent = `${exam.subject} Exam - ${new Date(exam.datetime).toLocaleDateString()}`;
+                li.appendChild(a);
+                notificationsList.appendChild(li);
+            });
+        }
+
+        function updateDashboardAssignments() {
+            const assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+            const assignmentsList = document.getElementById('assignmentsList');
+            assignmentsList.innerHTML = ''; // Clear existing assignments
+
+            assignments.forEach(assignment => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = 'assignments.html';
+                a.textContent = `${assignment.title} - Due: ${new Date(assignment.dueDate).toLocaleDateString()}`;
+                li.appendChild(a);
+                assignmentsList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

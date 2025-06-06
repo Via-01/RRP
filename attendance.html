@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .chart-buttons {
+            margin-bottom: 20px;
+        }
+
+        .chart-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chart-buttons button:hover {
+            background-color: #45a049;
+        }
+
+        .attendance-section {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .attendance-graph,
+        .progress-tracker {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* Adjusted size for the pie chart and bar chart canvases */
+        #attendancePieChart,
+        #subjectBarChart {
+            max-width: 400px;
+            margin: auto;
+            display: block;
+        }
+
+        .input-section {
+            text-align: left;
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .input-section label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .input-section input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        .generate-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .generate-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html" class="active"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="chart-buttons">
+            <button onclick="showPieChart()">Overall Attendance</button>
+            <button onclick="showBarChart()">Subject-wise Attendance</button>
+        </div>
+
+        <div id="pieChartContainer" class="attendance-section">
+            <canvas id="attendancePieChart"></canvas>
+        </div>
+
+        <div id="barChartContainer" class="attendance-section" style="display: none;">
+            <canvas id="subjectBarChart"></canvas>
+        </div>
+
+        <div class="input-section">
+            <h2>Enter Attendance Details</h2>
+
+            <label for="numSubjects">Number of Subjects:</label>
+            <input type="number" id="numSubjects" min="1" step="1" value="1" onchange="updateSubjectInputs()">
+
+            <div id="subjectInputs">
+                <!-- Subject input fields will be dynamically added here -->
+            </div>
+
+            <button class="generate-button" onclick="generateCharts()">Generate Charts</button>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let attendancePieChart;
+    let subjectBarChart;
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        loadSubjectData(); // Load saved data from local storage
+    });
+
+    function saveSubjectData() {
+        const subjectData = getSubjectData();
+        localStorage.setItem('subjectData', JSON.stringify(subjectData));
+    }
+
+    function loadSubjectData() {
+        const storedData = localStorage.getItem('subjectData');
+        if (storedData) {
+            const subjectData = JSON.parse(storedData);
+            document.getElementById('numSubjects').value = subjectData.length;
+            updateSubjectInputs();
+
+            subjectData.forEach((subject, index) => {
+                const subjectInputs = document.querySelectorAll('.subjectInput')[index];
+                subjectInputs.querySelector('.subjectName').value = subject.name;
+                subjectInputs.querySelector('.classesTotal').value = subject.total;
+                subjectInputs.querySelector('.classesAttended').value = subject.attended;
+            });
+
+            generateCharts(); // Generate charts after loading data
+        }
+    }
+
+    function updateSubjectInputs() {
+        const numSubjects = parseInt(document.getElementById('numSubjects').value);
+        const subjectInputs = document.getElementById('subjectInputs');
+        subjectInputs.innerHTML = ''; // Clear existing inputs
+
+        for (let i = 1; i <= numSubjects; i++) {
+            const newInput = document.createElement('div');
+            newInput.classList.add('subjectInput');
+            newInput.innerHTML = `
+                <hr>
+                <label>Subject ${i} Name:</label>
+                <input type="text" class="subjectName" placeholder="Enter subject name" oninput="saveSubjectData()">
+                <label>Total Classes:</label>
+                <input type="number" class="classesTotal" min="0" step="1" value="0" oninput="saveSubjectData()">
+                <label>Classes Attended:</label>
+                <input type="number" class="classesAttended" min="0" step="1" value="0" oninput="saveSubjectData()">
+            `;
+            subjectInputs.appendChild(newInput);
+        }
+    }
+
+    function getSubjectData() {
+        const subjectData = [];
+        const subjectInputs = document.querySelectorAll('.subjectInput');
+        subjectInputs.forEach(input => {
+            const subjectName = input.querySelector('.subjectName').value;
+            const classesTotal = parseInt(input.querySelector('.classesTotal').value);
+            const classesAttended = parseInt(input.querySelector('.classesAttended').value);
+
+            if (subjectName && !isNaN(classesTotal) && !isNaN(classesAttended) && classesTotal > 0 && classesAttended >= 0) {
+                subjectData.push({
+                    name: subjectName,
+                    total: classesTotal,
+                    attended: classesAttended
+                });
+            }
+        });
+        return subjectData;
+    }
+
+    function generatePieChart() {
+        const subjectData = getSubjectData();
+
+        let totalClassesAttended = subjectData.reduce((acc, val) => acc + val.attended, 0);
+        let totalClassesTotal = subjectData.reduce((acc, val) => acc + val.total, 0);
+        let totalAttendance = totalClassesTotal > 0 ? (totalClassesAttended / totalClassesTotal) * 100 : 0;
+
+        const pieData = {
+            labels: ['Total Attendance', 'Remaining'],
+            datasets: [{
+                data: [totalAttendance, 100 - totalAttendance],
+                backgroundColor: ['#4CAF50', '#f0f0f0']
+            }]
+        };
+
+        const ctx = document.getElementById('attendancePieChart').getContext('2d');
+        if (attendancePieChart) {
+            attendancePieChart.destroy();
+        }
+        attendancePieChart = new Chart(ctx, {
+            type: 'pie',
+            data: pieData,
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed) {
+                                    label += context.parsed.toFixed(2) + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'right',
+                        labels: {
+                            fontColor: 'black'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function generateBarChart() {
+        const subjectData = getSubjectData();
+
+        const barData = subjectData.map(subject => {
+            return (subject.total > 0) ? ((subject.attended / subject.total) * 100).toFixed(2) : 0;
+        });
+
+        const ctx = document.getElementById('subjectBarChart').getContext('2d');
+        if (subjectBarChart) {
+            subjectBarChart.destroy();
+        }
+        subjectBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: subjectData.map(subject => subject.name),
+                datasets: [{
+                    label: 'Attendance Percentage',
+                    data: barData,
+                    backgroundColor: '#4CAF50',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'x',
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function showPieChart() {
+        document.getElementById('pieChartContainer').style.display = 'block';
+        document.getElementById('barChartContainer').style.display = 'none';
+        generatePieChart();
+    }
+
+    function showBarChart() {
+        document.getElementById('pieChartContainer').style.display = 'none';
+        document.getElementById('barChartContainer').style.display = 'block';
+        generateBarChart();
+    }
+
+    function generateCharts() {
+        generatePieChart();
+        generateBarChart();
+    }
+
+    updateSubjectInputs();
+    generatePieChart(); // Show pie chart by default
+</script>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Information</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .professor {
+            margin: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            width: calc(25% - 40px);
+            max-width: 300px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .professor:hover {
+            transform: translateY(-5px);
+        }
+
+        .professor img {
+            width: 100%;
+            height: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .professor-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .professor-info h4 {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .professor-info p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html" class="active"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="professor" onclick="showModal('prof1')">
+            <img src="https://via.placeholder.com/300x300/FF5733/FFFFFF?text=Dr.+K.+Sandhya" alt="Dr. K. Sandhya">
+            <div class="professor-info">
+                <h4>Dr. K. Sandhya</h4>
+                <p>Department: Discrete Mathematics</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof2')">
+            <img src="https://via.placeholder.com/300x300/3498DB/FFFFFF?text=Dr.+B.+Kranthi+Kiran" alt="Dr. B. Kranthi Kiran">
+            <div class="professor-info">
+                <h4>Dr. B. Kranthi Kiran</h4>
+                <p>Department: Business Economics & Financial Analysis</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof3')">
+            <img src="https://via.placeholder.com/300x300/27AE60/FFFFFF?text=Dr.+M.+Arathi" alt="Dr. M. Arathi">
+            <div class="professor-info">
+                <h4>Dr. M. Arathi</h4>
+                <p>Department: Operating Systems</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof4')">
+            <img src="https://via.placeholder.com/300x300/E74C3C/FFFFFF?text=Dr.+K.+Sandhya" alt="Dr. K. Sandhya">
+            <div class="professor-info">
+                <h4>Dr. K. Sandhya</h4>
+                <p>Department: Database Management Systems</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof5')">
+            <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Dr.+K.+Neeraja" alt="Dr. K. Neeraja">
+            <div class="professor-info">
+                <h4>Dr. K. Neeraja</h4>
+                <p>Department: Software Engineering</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof6')">
+            <img src="https://via.placeholder.com/300x300/3498DB/FFFFFF?text=Mr.+N.+Sampath+Kumar" alt="Mr. N. Sampath Kumar">
+            <div class="professor-info">
+                <h4>Mr. N. Sampath Kumar</h4>
+                <p>Department: Operating Systems Lab (119 Lab)</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof7')">
+            <img src="https://via.placeholder.com/300x300/27AE60/FFFFFF?text=Dr.+K.+Suresh+Babu" alt="Dr. K. Suresh Babu">
+            <div class="professor-info">
+                <h4>Dr. K. Suresh Babu</h4>
+                <p>Department: Database Management Systems Lab (119 Lab)</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof8')">
+            <img src="https://via.placeholder.com/300x300/E74C3C/FFFFFF?text=Dr.+B.+Padmaja+Rani" alt="Dr. B. Padmaja Rani">
+            <div class="professor-info">
+                <h4>Dr. B. Padmaja Rani</h4>
+                <p>Department: Real-time Research Project/ Societal Related Project</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof9')">
+            <img src="https://via.placeholder.com/300x300/8E44AD/FFFFFF?text=Dr.+P.+Swetha" alt="Dr. P. Swetha">
+            <div class="professor-info">
+                <h4>Dr. P. Swetha</h4>
+                <p>Department: Real-time Research Project/ Societal Related Project</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof10')">
+            <img src="https://via.placeholder.com/300x300/3498DB/FFFFFF?text=Dr.+T.+Prasad" alt="Dr. T. Prasad">
+            <div class="professor-info">
+                <h4>Dr. T. Prasad</h4>
+                <p>Department: Constitution of India</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof11')">
+            <img src="https://via.placeholder.com/300x300/27AE60/FFFFFF?text=Dr.+M.+Arathi" alt="Dr. M. Arathi">
+            <div class="professor-info">
+                <h4>Dr. M. Arathi</h4>
+                <p>Department: Skill Development course (NodeJS/ React JS/Django) (119 Lab)</p>
+            </div>
+        </div>
+        <div class="professor" onclick="showModal('prof12')">
+            <img src="https://via.placeholder.com/300x300/E74C3C/FFFFFF?text=Ms.+D.+Kalpana" alt="Ms. D. Kalpana">
+            <div class="professor-info">
+                <h4>Ms. D. Kalpana</h4>
+                <p>Department: Skill Development course (NodeJS/ React JS/Django) (119 Lab)</p>
+            </div>
+        </div>
+        <!-- Add more professors as needed -->
+    </div>
+
+    <!-- Modals for professor details -->
+    <div id="prof1" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof1')">&times;</span>
+            <h2>Dr. K. Sandhya</h2>
+            <p>Email: ksandhya@example.com</p>
+            <p>Phone: +1234567890</p>
+            <p>Qualifications: PhD in Mathematics</p>
+            <p>Experience: 12 years</p>
+            <p>Quote: "Mathematics is the queen of sciences."</p>
+        </div>
+    </div>
+
+    <div id="prof2" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof2')">&times;</span>
+            <h2>Dr. B. Kranthi Kiran</h2>
+            <p>Email: bkranthi@example.com</p>
+            <p>Phone: +0987654321</p>
+            <p>Qualifications: PhD in Economics</p>
+            <p>Experience: 10 years</p>
+            <p>Quote: "Economics shapes our world."</p>
+        </div>
+    </div>
+
+    <div id="prof3" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof3')">&times;</span>
+            <h2>Dr. M. Arathi</h2>
+            <p>Email: marathi@example.com</p>
+            <p>Phone: +9876543210</p>
+            <p>Qualifications: PhD in Computer Science</p>
+            <p>Experience: 8 years</p>
+            <p>Quote: "Operating systems are the backbone of computing."</p>
+        </div>
+    </div>
+
+    <div id="prof4" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof4')">&times;</span>
+            <h2>Dr. K. Sandhya</h2>
+            <p>Email: ksandhya@example.com</p>
+            <p>Phone: +1122334455</p>
+            <p>Qualifications: PhD in Computer Science</p>
+            <p>Experience: 10 years</p>
+            <p>Quote: "Database Management Systems ensure data integrity."</p>
+        </div>
+    </div>
+
+    <div id="prof5" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof5')">&times;</span>
+            <h2>Dr. K. Neeraja</h2>
+            <p>Email: kneeraja@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Software Engineering</p>
+            <p>Experience: 7 years</p>
+            <p>Quote: "Building robust software solutions."</p>
+        </div>
+    </div>
+
+    <div id="prof6" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof6')">&times;</span>
+            <h2>Mr. N. Sampath Kumar</h2>
+            <p>Email: nsampath@example.com</p>
+            <p>Phone: +1122334455</p>
+            <p>Qualifications: M.Tech in Computer Science</p>
+            <p>Experience: 5 years</p>
+            <p>Quote: "Learning through practical experience in OS."</p>
+        </div>
+    </div>
+
+    <div id="prof7" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof7')">&times;</span>
+            <h2>Dr. K. Suresh Babu</h2>
+            <p>Email: ksbabu@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Computer Science</p>
+            <p>Experience: 9 years</p>
+            <p>Quote: "Databases are the backbone of information systems."</p>
+        </div>
+    </div>
+
+    <div id="prof8" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof8')">&times;</span>
+            <h2>Dr. B. Padmaja Rani</h2>
+            <p>Email: bpadmaja@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Sociology</p>
+            <p>Experience: 10 years</p>
+            <p>Quote: "Social research shapes our understanding of society."</p>
+        </div>
+    </div>
+
+    <div id="prof9" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof9')">&times;</span>
+            <h2>Dr. P. Swetha</h2>
+            <p>Email: pswetha@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Sociology</p>
+            <p>Experience: 8 years</p>
+            <p>Quote: "Researching societal impacts for a better future."</p>
+        </div>
+    </div>
+
+    <div id="prof10" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof10')">&times;</span>
+            <h2>Dr. T. Prasad</h2>
+            <p>Email: tprasad@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Law</p>
+            <p>Experience: 12 years</p>
+            <p>Quote: "Constitutional knowledge empowers citizens."</p>
+        </div>
+    </div>
+
+    <div id="prof11" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof11')">&times;</span>
+            <h2>Dr. M. Arathi</h2>
+            <p>Email: marathi@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: PhD in Computer Science</p>
+            <p>Experience: 8 years</p>
+            <p>Quote: "Empowering students with practical skills in technology."</p>
+        </div>
+    </div>
+
+    <div id="prof12" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('prof12')">&times;</span>
+            <h2>Ms. D. Kalpana</h2>
+            <p>Email: dkalpana@example.com</p>
+            <p>Phone: +9988776655</p>
+            <p>Qualifications: M.Tech in Computer Science</p>
+            <p>Experience: 5 years</p>
+            <p>Quote: "Enhancing coding skills for the future."</p>
+        </div>
+    </div>
+
+    <script>
+        function showModal(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments Due</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+        }
+
+        .assignments-list {
+            margin-bottom: 20px;
+        }
+
+        .assignment-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assignment-item h4 {
+            margin: 0;
+        }
+
+        .assignment-item p {
+            color: #888;
+            margin: 5px 0;
+        }
+
+        .assignment-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            background: #ff4c4c;
+            color: white;
+            cursor: pointer;
+        }
+
+        .assignment-item button:hover {
+            background: #e03c3c;
+        }
+
+        .add-assignment-form {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .add-assignment-form input,
+        .add-assignment-form textarea,
+        .add-assignment-form button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .add-assignment-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-assignment-form button:hover {
+            background: #45a049;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html" class="active"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="add-assignment-form">
+            <h3>Add Assignment</h3>
+            <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
+            <textarea id="assignmentDescription" placeholder="Description" required></textarea>
+            <input type="datetime-local" id="assignmentDueDate" required>
+            <button onclick="addAssignment()">Add Assignment</button>
+        </div>
+        <h2>Assignments Due</h2>
+        <div class="assignments-list" id="assignmentsList">
+            <!-- Assignment items will be added here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || [];
+
+        function saveAssignments() {
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+        }
+
+        function displayAssignments() {
+            const assignmentsList = document.getElementById('assignmentsList');
+            assignmentsList.innerHTML = '';
+            assignments.forEach((assignment, index) => {
+                const assignmentItem = document.createElement('div');
+                assignmentItem.className = 'assignment-item';
+                assignmentItem.innerHTML = `
+                    <div>
+                        <h4>${assignment.title}</h4>
+                        <p>${assignment.description}</p>
+                        <p>Due: ${assignment.dueDate}</p>
+                    </div>
+                    <button onclick="deleteAssignment(${index})">Delete</button>
+                `;
+                assignmentsList.appendChild(assignmentItem);
+            });
+        }
+
+        function addAssignment() {
+            const title = document.getElementById('assignmentTitle').value;
+            const description = document.getElementById('assignmentDescription').value;
+            const dueDate = document.getElementById('assignmentDueDate').value;
+            assignments.push({ title, description, dueDate });
+            saveAssignments();
+            displayAssignments();
+        }
+
+        function deleteAssignment(index) {
+            assignments.splice(index, 1);
+            saveAssignments();
+            displayAssignments();
+        }
+
+        window.onload = displayAssignments;
+    </script>
+</body>
+</html>

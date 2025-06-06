@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Schedule</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+        }
+
+        .exam-list {
+            margin-bottom: 20px;
+        }
+
+        .exam-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exam-item h4 {
+            margin: 0;
+        }
+
+        .exam-item .countdown {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .exam-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            background: #ff4c4c;
+            color: white;
+            cursor: pointer;
+        }
+
+        .exam-item button:hover {
+            background: #e03c3c;
+        }
+
+        .add-exam-form {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        .add-exam-form input,
+        .add-exam-form button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .add-exam-form button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-exam-form button:hover {
+            background: #45a049;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html" class="active"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="add-exam-form">
+            <h3>Add Exam</h3>
+            <input type="text" id="subject" placeholder="Subject" required>
+            <input type="datetime-local" id="datetime" required>
+            <input type="text" id="location" placeholder="Location" required>
+            <button onclick="addExam()">Add Exam</button>
+        </div>
+        <h2>Exam Schedule</h2>
+        <div class="exam-list" id="examList">
+            <!-- Exam items will be added here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        let exams = JSON.parse(localStorage.getItem('exams')) || [];
+
+        function saveExams() {
+            localStorage.setItem('exams', JSON.stringify(exams));
+        }
+
+        function displayExams() {
+            const examList = document.getElementById('examList');
+            examList.innerHTML = '';
+            exams.forEach((exam, index) => {
+                const examItem = document.createElement('div');
+                examItem.className = 'exam-item';
+                examItem.innerHTML = `
+                    <div>
+                        <h4>${exam.subject}</h4>
+                        <p>${exam.datetime} - ${exam.location}</p>
+                    </div>
+                    <div class="countdown" id="countdown-${index}"></div>
+                    <button onclick="deleteExam(${index})">Delete</button>
+                `;
+                examList.appendChild(examItem);
+                updateCountdown(index);
+            });
+        }
+
+        function addExam() {
+            const subject = document.getElementById('subject').value;
+            const datetime = document.getElementById('datetime').value;
+            const location = document.getElementById('location').value;
+            exams.push({ subject, datetime, location });
+            saveExams();
+            displayExams();
+        }
+
+        function deleteExam(index) {
+            exams.splice(index, 1);
+            saveExams();
+            displayExams();
+        }
+
+        function updateCountdown(index) {
+            const countdownElement = document.getElementById(`countdown-${index}`);
+            const exam = exams[index];
+            const examDate = new Date(exam.datetime);
+            const now = new Date();
+            const diff = examDate - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        setInterval(() => {
+            exams.forEach((_, index) => updateCountdown(index));
+        }, 60000);
+
+        window.onload = displayExams;
+    </script>
+</body>
+</html>

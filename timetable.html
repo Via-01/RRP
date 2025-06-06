@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-4o0XLhMd5/0+Gk6Wha6D+uMKE7U/JkUF7xVQFZlhKVNReX4hU5Ff57yPONx1s1BqNRZzE9MYA2iiUUzkf/jf5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            color: #fff;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            padding-top: 20px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: #ccc;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #333;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .timetable-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .timetable {
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        .editable {
+            cursor: pointer;
+        }
+
+        .editable:hover {
+            background-color: #f1f1f1;
+        }
+
+        .subject-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .subject-list h3 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+
+        .subject-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .subject-list ul li {
+            padding: 5px 0;
+            color: #333;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                overflow-y: hidden;
+            }
+
+            .content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header" onclick="location.href='index.html'">
+            <h2>Dashboard</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a>
+            <a href="assignments.html"><i class="fas fa-tasks"></i> Assignments Due</a>
+            <a href="timetable.html" class="active"><i class="fas fa-table"></i> Timetable</a>
+            <a href="exams.html"><i class="fas fa-clipboard-list"></i> Exam Schedule</a>
+            <a href="professors.html"><i class="fas fa-user-tie"></i> Professor Information</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="timetable-container">
+            <div class="timetable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time/Day</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                            <th>Saturday</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:30 AM - 11:00 AM</td>
+                            <td class="editable" onclick="editCell(this)">COI</td>
+                            <td class="editable" onclick="editCell(this)">COI</td>
+                            <td class="editable" onclick="editCell(this)">DBMS</td>
+                            <td class="editable" onclick="editCell(this)">......</td>
+                            <td class="editable" onclick="editCell(this)">SD LAB</td>
+                            <td class="editable" onclick="editCell(this)">RRP/SRP</td>
+                        </tr>
+                        <tr>
+                            <td>11:00 AM - 12:30 PM</td>
+                            <td class="editable" onclick="editCell(this)">SE</td>
+                            <td class="editable" onclick="editCell(this)">BEFA</td>
+                            <td class="editable" onclick="editCell(this)">DM</td>
+                            <td class="editable" onclick="editCell(this)">DM</td>
+                            <td class="editable" onclick="editCell(this)">10:30-12:30</td>
+                            <td class="editable" onclick="editCell(this)">10:30-12:30</td>
+                        </tr>
+                        <tr>
+                            <td>12:30 PM - 01:45 PM</td>
+                            <td colspan="6">LUNCH</td>
+                        </tr>
+                        <tr>
+                            <td>01:45 PM - 03:15 PM</td>
+                            <td class="editable" onclick="editCell(this)">DBMS LAB</td>
+                            <td class="editable" onclick="editCell(this)">OS</td>
+                            <td class="editable" onclick="editCell(this)">OS LAB</td>
+                            <td class="editable" onclick="editCell(this)">OS</td>
+                            <td class="editable" onclick="editCell(this)">DBMS</td>
+                            <td class="editable" onclick="editCell(this)">RRP/SRP</td>
+                        </tr>
+                        <tr>
+                            <td>03:15 PM - 04:45 PM</td>
+                            <td class="editable" onclick="editCell(this)">01:45-03:45</td>
+                            <td class="editable" onclick="editCell(this)">BEFA</td>
+                            <td class="editable" onclick="editCell(this)">01:45-03:45</td>
+                            <td class="editable" onclick="editCell(this)">SE</td>
+                            <td class="editable" onclick="editCell(this)">......</td>
+                            <td class="editable" onclick="editCell(this)">02:00-04:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="subject-list">
+                <h3>Subjects & Professors</h3>
+                <ul>
+                    <li>1. <strong>Discrete Mathematics:</strong> Dr. K. Sandhya</li>
+                    <li>2. <strong>Business Economics & Financial Analysis:</strong> Dr. B. Kranthi Kiran</li>
+                    <li>3. <strong>Operating Systems:</strong> Dr. M. Arathi</li>
+                    <li>4. <strong>Database Management Systems:</strong> Dr. K. Sandhya</li>
+                    <li>5. <strong>Software Engineering:</strong> Dr. K. Neeraja</li>
+                    <li>6. <strong>Operating Systems Lab (119 Lab):</strong> Mr. N. Sampath Kumar</li>
+                    <li>7. <strong>Database Management Systems Lab (119 Lab):</strong> Dr. K. Suresh Babu</li>
+                    <li>8. <strong>Real-time Research Project/ Societal Related Project:</strong> Dr. B. Padmaja Rani/ Dr. P. Swetha</li>
+                    <li>9. <strong>Constitution of India:</strong> Dr. T. Prasad</li>
+                    <li>10. <strong>Skill Development course (NodeJS/ React JS/Django) (119 Lab):</strong> Dr. M. Arathi/ Ms. D. Kalpana</li>
+                </ul>
+            </div>
+        </div>
+
+<script>
+    function editCell(cell) {
+        let currentValue = cell.innerText.trim();
+        let newValue = prompt("Enter new subject:", currentValue);
+        if (newValue !== null && newValue !== "") {
+            cell.innerText = newValue;
+        }
+    }
+</script>
+</body>
+</html>
